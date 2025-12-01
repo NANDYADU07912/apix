@@ -54,7 +54,7 @@ class YouTubeDownloader {
         
         $sanitizedQuery = preg_replace('/[^a-zA-Z0-9\s\-\'\"\.\,\(\)]/', '', $query);
         $searchTerm = escapeshellarg("ytsearch{$limit}:{$sanitizedQuery}");
-        $command = "yt-dlp --dump-json --flat-playlist --no-playlist {$searchTerm} 2>&1";
+        $command = "yt-dlp --cookies cookies.txt --dump-json --flat-playlist --no-playlist {$searchTerm} 2>&1";
         
         exec($command, $output, $returnCode);
         
@@ -92,7 +92,6 @@ class YouTubeDownloader {
     }
     
     public function getSongInfo($identifier) {
-        // Check if identifier is a video ID (11 alphanumeric chars)
         if (strlen($identifier) == 11 && preg_match('/^[a-zA-Z0-9_-]{11}$/', $identifier)) {
             $url = 'https://www.youtube.com/watch?v=' . $identifier;
         } elseif ($this->validateUrl($identifier)) {
@@ -109,11 +108,10 @@ class YouTubeDownloader {
         }
         
         $escapedUrl = escapeshellarg($url);
-        $command = "yt-dlp --dump-json --no-playlist --skip-unavailable-fragments {$escapedUrl} 2>&1";
+        $command = "yt-dlp --cookies cookies.txt --dump-json --no-playlist --skip-unavailable-fragments {$escapedUrl} 2>&1";
         
         exec($command, $output, $returnCode);
         
-        // Filter out warning lines and find JSON
         $jsonLine = '';
         foreach ($output as $line) {
             if (trim($line) === '') continue;
@@ -125,7 +123,6 @@ class YouTubeDownloader {
         }
         
         if (!$jsonLine) {
-            // Try to find JSON in any line
             $jsonLine = end($output);
             if (!$jsonLine || strpos($jsonLine, '{') === false) {
                 return [
@@ -176,7 +173,6 @@ class YouTubeDownloader {
     }
     
     public function downloadMp3($identifier) {
-        // Check if identifier is a video ID (11 alphanumeric chars)
         if (strlen($identifier) == 11 && preg_match('/^[a-zA-Z0-9_-]{11}$/', $identifier)) {
             $url = 'https://www.youtube.com/watch?v=' . $identifier;
             $videoId = $identifier;
@@ -225,7 +221,7 @@ class YouTubeDownloader {
         
         $escapedUrl = escapeshellarg($url);
         $escapedFilepath = escapeshellarg($filepath);
-        $command = "yt-dlp -x --audio-format mp3 --audio-quality 192K -o {$escapedFilepath} --no-playlist {$escapedUrl} 2>&1";
+        $command = "yt-dlp --cookies cookies.txt -x --audio-format mp3 --audio-quality 192K -o {$escapedFilepath} --no-playlist {$escapedUrl} 2>&1";
         
         exec($command, $output, $returnCode);
         

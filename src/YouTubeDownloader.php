@@ -161,6 +161,49 @@ class YouTubeDownloader {
         ];
     }
     
+    public function getStreamUrl($identifier) {
+        if (strlen($identifier) == 11 && preg_match('/^[a-zA-Z0-9_-]{11}$/', $identifier)) {
+            $url = 'https://www.youtube.com/watch?v=' . $identifier;
+        } elseif ($this->validateUrl($identifier)) {
+            $url = $identifier;
+        } else {
+            $searchResult = $this->searchSongs($identifier, 1);
+            if (!$searchResult['success'] || empty($searchResult['results'])) {
+                return [
+                    'success' => false,
+                    'error' => 'Song not found'
+                ];
+            }
+            $url = $searchResult['results'][0]['url'];
+        }
+        
+        $escapedUrl = escapeshellarg($url);
+        $command = "yt-dlp --cookies cookies.txt -f bestaudio --get-url --no-playlist {$escapedUrl} 2>&1";
+        
+        exec($command, $output, $returnCode);
+        
+        $streamUrl = '';
+        foreach ($output as $line) {
+            if (filter_var(trim($line), FILTER_VALIDATE_URL)) {
+                $streamUrl = trim($line);
+                break;
+            }
+        }
+        
+        if (empty($streamUrl)) {
+            return [
+                'success' => false,
+                'error' => 'Failed to get stream URL',
+                'details' => implode("\n", $output)
+            ];
+        }
+        
+        return [
+            'success' => true,
+            'stream_url' => $streamUrl
+        ];
+    }
+    
     private function formatDuration($seconds) {
         $hours = floor($seconds / 3600);
         $minutes = floor(($seconds % 3600) / 60);
@@ -241,6 +284,81 @@ class YouTubeDownloader {
                 'filename' => $filename,
                 'format' => 'mp3',
                 'quality' => '192kbps',
+                'file_size' => filesize($filepath),
+                'cached' => false
+            ]
+        ];
+    }
+    
+    public function downloadMp4($identifier) {
+        if (strlen($identifier) == 11 && preg_match('/^[a-zA-Z0-9_-]{11}$/', $identifier)) {
+            $url = 'https://www.youtube.com/watch?v=' . $identifier;
+            $videoId = $identifier;
+        } elseif ($this->validateUrl($identifier)) {
+            $url = $identifier;
+            $videoId = $this->extractVideoId($identifier);
+        } else {
+            $searchResult = $this->searchSongs($identifier, 1);
+            if (!$searchResult['success'] || empty($searchResult['results'])) {
+                return [
+                    'success' => false,
+                    'error' => 'Video not found: ' . $identifier
+                ];
+            }
+            $url = $searchResult['results'][0]['url'];
+            $videoId = $searchResult['results'][0]['id'];
+        }
+        
+        if (!$videoId) {
+            return [
+                'success' => false,
+                'error' => 'Could not extract video ID'
+            ];
+        }
+        
+        $infoResult = $this->getSongInfo($url);
+        $videoTitle = $infoResult['success'] ? $infoResult['data']['title'] : $videoId;
+        
+        $filename = $videoId . '.mp4';
+        $filepath = $this->downloadPath . $filename;
+        
+        if (file_exists($filepath)) {
+            return [
+                'success' => true,
+                'data' => [
+                    'title' => $videoTitle,
+                    'download_url' => $this->baseUrl . $filename,
+                    'filename' => $filename,
+                    'format' => 'mp4',
+                    'quality' => 'best',
+                    'file_size' => filesize($filepath),
+                    'cached' => true
+                ]
+            ];
+        }
+        
+        $escapedUrl = escapeshellarg($url);
+        $escapedFilepath = escapeshellarg($filepath);
+        $command = "yt-dlp --cookies cookies.txt -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best' --merge-output-format mp4 -o {$escapedFilepath} --no-playlist {$escapedUrl} 2>&1";
+        
+        exec($command, $output, $returnCode);
+        
+        if (!file_exists($filepath)) {
+            return [
+                'success' => false,
+                'error' => 'Failed to download video',
+                'details' => implode("\n", array_slice($output, -3))
+            ];
+        }
+        
+        return [
+            'success' => true,
+            'data' => [
+                'title' => $videoTitle,
+                'download_url' => $this->baseUrl . $filename,
+                'filename' => $filename,
+                'format' => 'mp4',
+                'quality' => 'best',
                 'file_size' => filesize($filepath),
                 'cached' => false
             ]

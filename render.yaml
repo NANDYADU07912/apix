@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: youtube-mp3-api
+    env: php
+    plan: free
+    
+    # Build command - install dependencies
+    buildCommand: |
+      echo "Installing system packages..."
+      apt-get update
+      apt-get install -y python3-pip ffmpeg
+      echo "Installing yt-dlp..."
+      pip install --break-system-packages yt-dlp
+      echo "Creating downloads directory..."
+      mkdir -p downloads
+      chmod 777 downloads
+      echo "Build completed successfully!"
+    
+    # Start command
+    startCommand: php -S 0.0.0.0:$PORT
+    
+    # Environment variables
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: API_BASE_URL
+        sync: false
+      - key: DEBUG
+        value: "false"
+      - key: MAX_DOWNLOAD_SIZE
+        value: "52428800"
+    
+    # Root directory (if different)
+    rootDir: .
+    
+    # Health check
+    healthCheckPath: /
+    
+    # Dockerfile or similar can be added here if needed

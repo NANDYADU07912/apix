@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube MP3 Download API - Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a1a1a;
+            --primary-dark: #000000;
+            --secondary: #333333;
+            --accent: #222222;
+            --bg-light: #ffffff;
+            --bg-light-secondary: #f5f5f5;
+            --bg-dark: #0a0a0a;
+            --bg-dark-secondary: #1a1a1a;
+            --bg-dark-tertiary: #262626;
+            --text-light: #1a1a1a;
+            --text-light-secondary: #555555;
+            --text-dark: #f0f0f0;
+            --text-dark-secondary: #b0b0b0;
+            --border-light: #e0e0e0;
+            --border-dark: #404040;
+            --success: #2a2a2a;
+            --warning: #3a3a3a;
+            --error: #2a2a2a;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.6;
+            background: var(--bg-light);
+            color: var(--text-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        /* Navigation */
+        .navbar {
+            background: var(--bg-light);
+            border-bottom: 2px solid var(--primary);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .navbar {
+            background: var(--bg-dark-secondary);
+            border-bottom-color: var(--border-dark);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        body.dark-mode .navbar-brand {
+            color: var(--text-dark);
+        }
+
+        .navbar-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: var(--primary);
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .theme-toggle {
+            background: var(--text-dark);
+            color: var(--primary);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .hamburger {
+            background: var(--primary);
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .hamburger {
+            background: var(--text-dark);
+            color: var(--primary);
+        }
+
+        .hamburger:hover {
+            transform: scale(1.05);
+        }
+
+        .mobile-menu {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: var(--bg-light);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+            min-width: 220px;
+            overflow: hidden;
+        }
+
+        body.dark-mode .mobile-menu {
+            background: var(--bg-dark-secondary);
+            border-color: var(--border-dark);
+        }
+
+        .mobile-menu.active {
+            display: block;
+        }
+
+        .mobile-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 1rem;
+            color: var(--text-light);
+            text-decoration: none;
+            border-bottom: 1px solid var(--border-light);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .mobile-menu a {
+            color: var(--text-dark);
+            border-bottom-color: var(--border-dark);
+        }
+
+        .mobile-menu a:hover {
+            background: var(--primary);
+            color: white;
+            padding-left: 1.5rem;
+        }
+
+        body.dark-mode .mobile-menu a:hover {
+            background: var(--text-dark);
+            color: var(--primary);
+        }
+
+        .mobile-menu a:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+            
+            .navbar-brand {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Main Container */
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 1rem;
+            }
+        }
+
+        /* Stats Grid */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border: 2px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .stat-card {
+            background: var(--bg-dark-secondary);
+            border-color: var(--border-dark);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            border-color: var(--primary);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark-mode .stat-icon {
+            color: var(--text-dark);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        body.dark-mode .stat-value {
+            color: var(--text-dark);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light-secondary);
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        body.dark-mode .stat-label {
+            color: var(--text-dark-secondary);
+        }
+
+        /* Sections */
+        section {
+            background: white;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode section {
+            background: var(--bg-dark-secondary);
+            border-color: var(--border-dark);
+        }
+
+        section:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 800;
+        }
+
+        body.dark-mode h2 {
+            color: var(--text-dark);
+        }
+
+        h2 i {
+            font-size: 1.6rem;
+        }
+
+        h3 {
+            color: var(--primary);
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        body.dark-mode h3 {
+            color: var(--text-dark);
+        }
+
+        /* Endpoint Cards */
+        .endpoint {
+            background: var(--bg-light-secondary);
+            border-left: 5px solid var(--primary);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .endpoint {
+            background: var(--bg-dark-tertiary);
+        }
+
+        .endpoint:hover {
+            border-left-color: var(--accent);
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .method-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .method-badge.post {
+            background: var(--secondary);
+        }
+
+        .endpoint-path {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-weight: 700;
+            color: var(--text-light);
+            word-break: break-all;
+            font-size: 0.95rem;
+        }
+
+        body.dark-mode .endpoint-path {
+            color: var(--text-dark);
+        }
+
+        /* Tabs */
+        .tab-container {
+            margin: 1.5rem 0;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 3px solid var(--primary);
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        body.dark-mode .tab-buttons {
+            border-bottom-color: var(--border-dark);
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: var(--text-light-secondary);
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        body.dark-mode .tab-button {
+            color: var(--text-dark-secondary);
+        }
+
+        .tab-button:hover {
+            color: var(--primary);
+        }
+
+        body.dark-mode .tab-button:hover {
+            color: var(--text-dark);
+        }
+
+        .tab-button.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        body.dark-mode .tab-button.active {
+            color: var(--text-dark);
+            border-color: var(--text-dark);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--primary);
+        }
+
+        body.dark-mode table {
+            background: var(--bg-dark-tertiary);
+            border-color: var(--border-dark);
+        }
+
+        table th {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-light);
+        }
+
+        body.dark-mode table td {
+            border-bottom-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        table tr:hover {
+            background: var(--bg-light-secondary);
+        }
+
+        body.dark-mode table tr:hover {
+            background: var(--bg-dark-secondary);
+        }
+
+        /* Code Blocks */
+        pre {
+            background: #1a1a1a;
+            color: #f0f0f0;
+            padding: 1.5rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            line-height: 1.5;
+            font-size: 0.9rem;
+            position: relative;
+            border: 1px solid var(--primary);
+        }
+
+        code {
+            background: var(--bg-light-secondary);
+            border: 1px solid var(--primary);
+            border-radius: 3px;
+            padding: 0.2rem 0.5rem;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9em;
+            color: var(--primary);
+        }
+
+        body.dark-mode code {
+            background: var(--bg-dark-tertiary);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        /* Copy Button */
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent);
+            transform: scale(1.05);
+        }
+
+        /* Alert Boxes */
+        .alert {
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .alert-icon {
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .alert-info {
+            background: #f5f5f5;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        body.dark-mode .alert-info {
+            background: rgba(26, 26, 26, 0.6);
+            color: var(--text-dark);
+        }
+
+        .alert-success {
+            background: #f0f0f0;
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+
+        body.dark-mode .alert-success {
+            background: rgba(51, 51, 51, 0.6);
+            color: var(--text-dark);
+        }
+
+        .alert-warning {
+            background: #fafafa;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        body.dark-mode .alert-warning {
+            background: rgba(38, 38, 38, 0.6);
+            color: var(--text-dark);
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .feature-card {
+            background: white;
+            border: 2px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .feature-card {
+            background: var(--bg-dark-secondary);
+            border-color: var(--border-dark);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.2);
+            border-color: var(--accent);
+        }
+
+        .feature-icon {
+            font-size: 2.8rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        body.dark-mode .feature-icon {
+            color: var(--text-dark);
+        }
+
+        .feature-card h3 {
+            margin-top: 0;
+            color: var(--text-light);
+        }
+
+        body.dark-mode .feature-card h3 {
+            color: var(--text-dark);
+        }
+
+        .feature-card p {
+            color: var(--text-light-secondary);
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        body.dark-mode .feature-card p {
+            color: var(--text-dark-secondary);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-light);
+            border-top: 2px solid var(--primary);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-light-secondary);
+            margin-top: 3rem;
+        }
+
+        body.dark-mode footer {
+            background: var(--bg-dark-secondary);
+            border-top-color: var(--border-dark);
+            color: var(--text-dark-secondary);
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        body.dark-mode footer a {
+            color: var(--text-dark);
+        }
+
+        footer a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            main {
+                padding: 0.75rem;
+            }
+
+            .navbar {
+                padding: 0.75rem 1rem;
+            }
+
+            .navbar-brand {
+                font-size: 1rem;
+                font-weight: 800;
+            }
+
+            section {
+                padding: 1.25rem;
+                border-radius: 6px;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+                margin-bottom: 1rem;
+            }
+
+            h3 {
+                font-size: 1.1rem;
+                margin-top: 1rem;
+            }
+
+            table {
+                font-size: 0.85rem;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            table th, table td {
+                padding: 0.6rem 0.5rem;
+            }
+
+            pre {
+                padding: 1rem;
+                font-size: 0.75rem;
+                margin: 0.75rem 0;
+                border-radius: 4px;
+            }
+
+            .copy-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.75rem;
+                top: 5px;
+                right: 5px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+                margin-bottom: 1rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-icon {
+                font-size: 2rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .stat-label {
+                font-size: 0.85rem;
+            }
+
+            .endpoint {
+                padding: 1rem;
+                margin-bottom: 1rem;
+                border-left: 4px solid;
+            }
+
+            .endpoint-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .method-badge {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .endpoint-path {
+                word-break: break-word;
+                font-size: 0.9rem;
+                max-width: 100%;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .feature-card {
+                padding: 1.25rem;
+            }
+
+            .feature-icon {
+                font-size: 2.2rem;
+            }
+
+            .alert {
+                padding: 1rem;
+                gap: 0.75rem;
+                font-size: 0.95rem;
+            }
+
+            .alert-icon {
+                font-size: 1.1rem;
+                min-width: 20px;
+            }
+
+            ul {
+                margin-left: 1.5rem;
+                font-size: 0.95rem;
+            }
+
+            ul li {
+                margin-bottom: 0.4rem;
+            }
+
+            .tab-button {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .mobile-menu {
+                min-width: 180px;
+                top: 55px;
+            }
+
+            .mobile-menu a {
+                padding: 0.85rem;
+                font-size: 0.95rem;
+            }
+
+            p {
+                font-size: 0.95rem;
+                line-height: 1.5;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+
+            footer {
+                padding: 1.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            main {
+                padding: 0.5rem;
+            }
+
+            section {
+                padding: 1rem;
+            }
+
+            h2 {
+                font-size: 1.2rem;
+                gap: 0.5rem;
+            }
+
+            h2 i {
+                font-size: 1.3rem;
+            }
+
+            h3 {
+                font-size: 1rem;
+            }
+
+            .stat-card {
+                padding: 0.85rem;
+            }
+
+            .stat-icon {
+                font-size: 1.8rem;
+            }
+
+            .stat-value {
+                font-size: 1.3rem;
+            }
+
+            .stat-label {
+                font-size: 0.8rem;
+            }
+
+            pre {
+                padding: 0.75rem;
+                font-size: 0.7rem;
+                margin: 0.5rem 0;
+            }
+
+            .endpoint {
+                padding: 0.85rem;
+                border-radius: 4px;
+            }
+
+            table th, table td {
+                padding: 0.4rem 0.3rem;
+                font-size: 0.75rem;
+            }
+
+            .method-badge {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.75rem;
+                gap: 0.25rem;
+            }
+
+            .feature-card {
+                padding: 1rem;
+            }
+
+            .feature-icon {
+                font-size: 2rem;
+            }
+
+            ul {
+                margin-left: 1rem;
+                font-size: 0.9rem;
+            }
+
+            p {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* List styling */
+        ul {
+            margin-left: 2rem;
+            color: var(--text-light);
+        }
+
+        body.dark-mode ul {
+            color: var(--text-dark);
+        }
+
+        ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        ul li strong {
+            color: var(--primary);
+        }
+
+        body.dark-mode ul li strong {
+            color: var(--text-dark);
+        }
+
+        p {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        body.dark-mode p {
+            color: var(--text-dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-brand"><i class="fas fa-music"></i> YouTube MP3 API</div>
+        <div class="navbar-controls">
+            <button class="theme-toggle" onclick="toggleDarkMode()" title="Toggle dark/light mode">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="hamburger" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#overview"><i class="fas fa-book"></i> Overview</a>
+            <a href="#endpoints"><i class="fas fa-code"></i> Endpoints</a>
+            <a href="#examples"><i class="fas fa-terminal"></i> Examples</a>
+            <a href="#errors"><i class="fas fa-circle-exclamation"></i> Errors</a>
+            <a href="/"><i class="fas fa-arrow-left"></i> Back to API</a>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Stats -->
+        <section class="stats">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-server"></i></div>
+                <div class="stat-value">5</div>
+                <div class="stat-label">API Endpoints</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-code"></i></div>
+                <div class="stat-value">JSON</div>
+                <div class="stat-label">Response Format</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-database"></i></div>
+                <div class="stat-value">50MB</div>
+                <div class="stat-label">Max File Size</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-gauge"></i></div>
+                <div class="stat-value">No Limit</div>
+                <div class="stat-label">Rate Limit</div>
+            </div>
+        </section>
+
+        <!-- Overview -->
+        <section id="overview">
+            <h2><i class="fas fa-circle-info"></i> Overview</h2>
+            <p>YouTube MP3 Download API provides a robust, production-ready solution for converting and downloading YouTube videos as MP3 files. Built for performance, reliability, and seamless integration.</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                    <h3>Lightning Fast</h3>
+                    <p>Optimized for speed with intelligent caching</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-shield"></i></div>
+                    <h3>Secure</h3>
+                    <p>Input validation and injection prevention</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-mobile"></i></div>
+                    <h3>Cross-Platform</h3>
+                    <p>Works with web, mobile, and desktop apps</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-circle-check"></i></div>
+                    <h3>Reliable</h3>
+                    <p>Error handling and automatic cleanup</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-book-open"></i></div>
+                    <h3>Well Documented</h3>
+                    <p>Complete guides with code examples</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-rocket"></i></div>
+                    <h3>Easy Deploy</h3>
+                    <p>One-click deployment on any platform</p>
+                </div>
+            </div>
+
+            <div class="alert alert-info" style="margin-top: 1.5rem;">
+                <div class="alert-icon"><i class="fas fa-star"></i></div>
+                <div><strong>Version 1.0.0</strong> - Production-ready stable release</div>
+            </div>
+        </section>
+
+        <!-- Endpoints -->
+        <section id="endpoints">
+            <h2><i class="fas fa-code"></i> API Endpoints</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method-badge"><i class="fas fa-arrow-right"></i> GET</span>
+                    <span class="endpoint-path">/</span>
+                </div>
+                <h3>Get API Information</h3>
+                <p>Returns API version and available endpoints</p>
+                <table>
+                    <tr>
+                        <th>Property</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>version</td>
+                        <td>string</td>
+                        <td>Current API version</td>
+                    </tr>
+                    <tr>
+                        <td>endpoints</td>
+                        <td>array</td>
+                        <td>Available endpoint paths</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method-badge post"><i class="fas fa-arrow-right"></i> POST</span>
+                    <span class="endpoint-path">/download</span>
+                </div>
+                <h3>Download MP3</h3>
+                <p>Download a song as MP3 file</p>
+                <div class="alert alert-warning">
+                    <div class="alert-icon"><i class="fas fa-clock"></i></div>
+                    <div><strong>Note:</strong> Conversion can take 10-30 seconds depending on video length</div>
+                </div>
+                <table>
+                    <tr>
+                        <th>Property</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>url</td>
+                        <td>string</td>
+                        <td>YouTube video URL (required)</td>
+                    </tr>
+                    <tr>
+                        <td>bitrate</td>
+                        <td>string</td>
+                        <td>Audio bitrate: 128k, 192k, 256k, 320k (default: 192k)</td>
+                    </tr>
+                    <tr>
+                        <td>format</td>
+                        <td>string</td>
+                        <td>Format type: mp3, m4a (default: mp3)</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method-badge"><i class="fas fa-arrow-right"></i> GET</span>
+                    <span class="endpoint-path">/status/:id</span>
+                </div>
+                <h3>Check Conversion Status</h3>
+                <p>Get the status of a download task</p>
+                <table>
+                    <tr>
+                        <th>Property</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>id</td>
+                        <td>string</td>
+                        <td>Task ID from download endpoint</td>
+                    </tr>
+                    <tr>
+                        <td>status</td>
+                        <td>string</td>
+                        <td>pending, processing, completed, error</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method-badge"><i class="fas fa-arrow-right"></i> GET</span>
+                    <span class="endpoint-path">/file/:id</span>
+                </div>
+                <h3>Retrieve MP3 File</h3>
+                <p>Download the converted MP3 file</p>
+                <table>
+                    <tr>
+                        <th>Property</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>id</td>
+                        <td>string</td>
+                        <td>Task ID from download endpoint</td>
+                    </tr>
+                    <tr>
+                        <td>filename</td>
+                        <td>string</td>
+                        <td>Custom filename (optional)</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method-badge post"><i class="fas fa-arrow-right"></i> POST</span>
+                    <span class="endpoint-path">/batch</span>
+                </div>
+                <h3>Batch Download</h3>
+                <p>Convert multiple videos in one request</p>
+                <table>
+                    <tr>
+                        <th>Property</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>urls</td>
+                        <td>array</td>
+                        <td>Array of YouTube URLs</td>
+                    </tr>
+                    <tr>
+                        <td>bitrate</td>
+                        <td>string</td>
+                        <td>Audio bitrate for all files</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- Examples -->
+        <section id="examples">
+            <h2><i class="fas fa-terminal"></i> Code Examples</h2>
+
+            <h3>JavaScript/Node.js</h3>
+            <pre><code class="language-javascript">const response = await fetch('https://api.example.com/download', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+        bitrate: '320k',
+        format: 'mp3'
+    })
+});
+
+const data = await response.json();
+console.log('Task ID:', data.id);
+console.log('Status:', data.status);</code></pre>
+
+            <h3>Python</h3>
+            <pre><code class="language-python">import requests
+import json
+
+payload = {
+    'url': 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+    'bitrate': '320k',
+    'format': 'mp3'
+}
+
+response = requests.post(
+    'https://api.example.com/download',
+    json=payload
+)
+
+data = response.json()
+print(f"Task ID: {data['id']}")
+print(f"Status: {data['status']}")</code></pre>
+
+            <h3>cURL</h3>
+            <pre><code class="language-bash">curl -X POST https://api.example.com/download \
+    -H "Content-Type: application/json" \
+    -d '{
+        "url": "https://youtube.com/watch?v=dQw4w9WgXcQ",
+        "bitrate": "320k",
+        "format": "mp3"
+    }'</code></pre>
+
+            <h3>Check Status</h3>
+            <pre><code class="language-javascript">// Poll for completion
+async function checkStatus(taskId) {
+    let status = 'processing';
+    while (status === 'processing') {
+        const response = await fetch(`/status/${taskId}`);
+        const data = await response.json();
+        status = data.status;
+        
+        if (status === 'completed') {
+            console.log('Download ready!');
+            window.location.href = `/file/${taskId}`;
+        } else if (status === 'error') {
+            console.error('Conversion failed:', data.error);
+        }
+        
+        // Wait 2 seconds before checking again
+        await new Promise(r => setTimeout(r, 2000));
+    }
+}</code></pre>
+        </section>
+
+        <!-- Error Handling -->
+        <section id="errors">
+            <h2><i class="fas fa-circle-exclamation"></i> Error Handling</h2>
+
+            <h3>Error Response Format</h3>
+            <pre><code class="language-json">{
+    "error": true,
+    "code": "INVALID_URL",
+    "message": "The provided URL is not a valid YouTube link",
+    "statusCode": 400
+}</code></pre>
+
+            <h3>Common Errors</h3>
+            <table>
+                <tr>
+                    <th>Code</th>
+                    <th>HTTP Status</th>
+                    <th>Description</th>
+                    <th>Solution</th>
+                </tr>
+                <tr>
+                    <td>INVALID_URL</td>
+                    <td>400</td>
+                    <td>URL is not a valid YouTube link</td>
+                    <td>Verify the YouTube URL format</td>
+                </tr>
+                <tr>
+                    <td>VIDEO_NOT_FOUND</td>
+                    <td>404</td>
+                    <td>Video doesn't exist or is deleted</td>
+                    <td>Check if video is still available</td>
+                </tr>
+                <tr>
+                    <td>RESTRICTED</td>
+                    <td>403</td>
+                    <td>Video is restricted or region-locked</td>
+                    <td>Try a different video</td>
+                </tr>
+                <tr>
+                    <td>FILE_TOO_LARGE</td>
+                    <td>413</td>
+                    <td>Video exceeds 50MB limit</td>
+                    <td>Use shorter videos or lower bitrate</td>
+                </tr>
+                <tr>
+                    <td>CONVERSION_FAILED</td>
+                    <td>500</td>
+                    <td>Backend conversion error</td>
+                    <td>Retry the request</td>
+                </tr>
+                <tr>
+                    <td>RATE_LIMIT_EXCEEDED</td>
+                    <td>429</td>
+                    <td>Too many requests</td>
+                    <td>Wait before making new requests</td>
+                </tr>
+            </table>
+
+            <h3>Error Handling Example</h3>
+            <pre><code class="language-javascript">async function downloadMP3(url) {
+    try {
+        const response = await fetch('/download', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url })
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(`${error.code}: ${error.message}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error.message);
+        
+        if (error.message.includes('INVALID_URL')) {
+            alert('Please enter a valid YouTube URL');
+        } else if (error.message.includes('FILE_TOO_LARGE')) {
+            alert('Video is too large for conversion');
+        }
+    }
+}</code></pre>
+        </section>
+
+        <!-- Rate Limiting -->
+        <section>
+            <h2><i class="fas fa-tachometer-alt"></i> Rate Limiting & Quotas</h2>
+
+            <p>The API implements rate limiting to ensure fair usage across all clients. Rate limit information is provided in response headers.</p>
+
+            <h3>Rate Limit Headers</h3>
+            <table>
+                <tr>
+                    <th>Header</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>X-RateLimit-Limit</td>
+                    <td>Maximum requests per minute</td>
+                </tr>
+                <tr>
+                    <td>X-RateLimit-Remaining</td>
+                    <td>Remaining requests in current window</td>
+                </tr>
+                <tr>
+                    <td>X-RateLimit-Reset</td>
+                    <td>Unix timestamp when limit resets</td>
+                </tr>
+            </table>
+
+            <h3>Quotas</h3>
+            <ul>
+                <li><strong>Free Tier:</strong> 10 conversions/hour, 5GB/month</li>
+                <li><strong>Pro Tier:</strong> 100 conversions/hour, 50GB/month</li>
+                <li><strong>Enterprise:</strong> Unlimited</li>
+            </ul>
+
+            <div class="alert alert-info">
+                <div class="alert-icon"><i class="fas fa-lightbulb"></i></div>
+                <div>Consider implementing exponential backoff when handling rate limit responses (429 status).</div>
+            </div>
+        </section>
+
+        <!-- Best Practices -->
+        <section>
+            <h2><i class="fas fa-star"></i> Best Practices</h2>
+
+            <h3>URL Validation</h3>
+            <p>Always validate YouTube URLs before sending to the API:</p>
+            <pre><code class="language-javascript">function isValidYouTubeURL(url) {
+    const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+        /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/
+    ];
+    return patterns.some(p => p.test(url));
+}</code></pre>
+
+            <h3>Polling Strategy</h3>
+            <ul>
+                <li>Use exponential backoff when polling status</li>
+                <li>Start with 1-2 second intervals</li>
+                <li>Cap polling at 30 second intervals</li>
+                <li>Set maximum timeout at 5 minutes</li>
+            </ul>
+
+            <h3>Error Recovery</h3>
+            <ul>
+                <li>Implement retry logic with exponential backoff</li>
+                <li>Don't retry on 4xx errors (client errors)</li>
+                <li>Retry 5xx errors up to 3 times</li>
+                <li>Log all errors for debugging</li>
+            </ul>
+
+            <div class="alert alert-success">
+                <div class="alert-icon"><i class="fas fa-check-circle"></i></div>
+                <div>Always cache results and reuse downloads when possible to reduce API calls.</div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section>
+            <h2><i class="fas fa-circle-question"></i> Frequently Asked Questions</h2>
+            
+            <h3>What video formats are supported?</h3>
+            <p>Currently supports YouTube videos only. Other platforms may not work due to copyright protection.</p>
+
+            <h3>What's the maximum file size?</h3>
+            <p>Maximum file size is 50MB. Larger videos will return a FILE_TOO_LARGE error.</p>
+
+            <h3>How long does download take?</h3>
+            <p>Typically 10-30 seconds for songs. Longer videos may take up to 60 seconds.</p>
+
+            <h3>Is commercial use allowed?</h3>
+            <p>Not recommended without proper licensing from YouTube. Check copyright laws in your jurisdiction.</p>
+
+            <h3>Can I download private videos?</h3>
+            <p>No, only public and unlisted videos can be downloaded.</p>
+
+            <h3>What's the difference between bitrates?</h3>
+            <p>Higher bitrates (256k, 320k) provide better audio quality but larger file sizes. 192k is recommended for most use cases.</p>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p><i class="fas fa-copyright"></i> YouTube MP3 Download API &copy; 2025</p>
+        <p><a href="/"><i class="fas fa-arrow-left"></i> Back to API</a></p>
+    </footer>
+
+    <script>
+        // Dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const icon = document.querySelector('.theme-toggle i');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.className = 'fas fa-sun';
+            } else {
+                icon.className = 'fas fa-moon';
+            }
+        }
+
+        // Load dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            updateThemeIcon();
+        }
+
+        // Mobile menu
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+        }
+
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('mobileMenu');
+            const hamburger = document.querySelector('.hamburger');
+            if (!menu.contains(event.target) && !hamburger.contains(event.target)) {
+                menu.classList.remove('active');
+            }
+        });
+
+        // Highlight code
+        document.addEventListener('DOMContentLoaded', function() {
+            hljs.highlightAll();
+        });
+
+        // Copy button
+        document.querySelectorAll('pre code').forEach(el => {
+            const button = document.createElement('button');
+            button.className = 'copy-btn';
+            button.innerHTML = '<i class="fas fa-copy"></i> Copy';
+            button.onclick = () => {
+                navigator.clipboard.writeText(el.textContent);
+                const oldText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(() => button.innerHTML = oldText, 2000);
+            };
+            el.parentElement.appendChild(button);
+        });
+    </script>
+</body>
+</html>

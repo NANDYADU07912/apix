@@ -1,0 +1,25 @@
+# PHP
+/vendor/
+*.log
+*.cache
+.env
+.env.local
+.env.*.local
+
+# Downloads folder content
+/downloads/*
+!/downloads/.gitkeep
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Composer
+composer.phar
+composer.lock
